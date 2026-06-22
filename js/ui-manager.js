@@ -180,7 +180,6 @@ const UIManager = (() => {
     phaseTag.textContent = `Phase ${countryConf.phase} 국가`;
 
     document.getElementById('detailCapital').textContent = countryConf.capital;
-    document.getElementById('detailManager').textContent = countryConf.regionalManager;
     document.getElementById('detailPort').textContent = countryConf.primaryPort;
 
     // 2. Weather Display
