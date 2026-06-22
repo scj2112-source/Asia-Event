@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 4. Initialize Chart Manager
-    ChartManager.init('severityChart', 'productChart');
+    ChartManager.init('severityChart');
 
     // 5. Load Initial Data from APIs (ReliefWeb, ExchangeRate, OpenWeather, Google News RSS)
     await DataManager.init();

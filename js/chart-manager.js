@@ -144,7 +144,7 @@ const ChartManager = (() => {
 
   // Update chart data based on loaded and filtered records
   function updateCharts(filteredEvents) {
-    if (!severityDonutChart || !productBarChart) return;
+    if (!severityDonutChart) return;
 
     // 1. Calculate Severities
     const counts = {
@@ -167,61 +167,11 @@ const ChartManager = (() => {
       counts["Opportunity"]
     ]);
 
-    // 2. Calculate Product Distribution per top Country
-    const activeCountries = {};
-    filteredEvents.forEach(e => {
-      if (!activeCountries[e.country]) {
-        activeCountries[e.country] = { ref: 0, wm: 0 };
-      }
-      if (e.products.includes("Refrigerator")) activeCountries[e.country].ref++;
-      if (e.products.includes("Washing Machine")) activeCountries[e.country].wm++;
-    });
-
-    // Extract top 5 active countries
-    const sortedCountries = Object.keys(activeCountries)
-      .map(name => ({
-        name,
-        total: activeCountries[name].ref + activeCountries[name].wm,
-        ref: activeCountries[name].ref,
-        wm: activeCountries[name].wm
-      }))
-      .sort((a, b) => b.total - a.total)
-      .slice(0, 5);
-
-    const categories = sortedCountries.map(sc => {
-      const codes = {
-        "싱가포르": "SG", "태국": "TH", "방글라데시": "BD", "스리랑카": "LK", "네팔": "NP",
-        "인도네시아": "ID", "베트남": "VN", "말레이시아": "MY", "필리핀": "PH", "인도": "IN",
-        "대만": "TW", "중국": "CN", "호주": "AU", "뉴질랜드": "NZ"
-      };
-      return codes[sc.name] || sc.name.substring(0, 3).toUpperCase();
-    });
-
-    const refSeries = sortedCountries.map(sc => sc.ref);
-    const wmSeries = sortedCountries.map(sc => sc.wm);
-
-    while (categories.length < 5) {
-      categories.push("-");
-      refSeries.push(0);
-      wmSeries.push(0);
-    }
-
-    productBarChart.updateOptions({
-      xaxis: {
-        categories: categories
-      }
-    });
-
-    productBarChart.updateSeries([
-      { name: '냉장고', data: refSeries },
-      { name: '세탁기', data: wmSeries }
-    ]);
   }
 
   return {
-    init: (donutContainerId, barContainerId) => {
+    init: (donutContainerId) => {
       initSeverityDonut(donutContainerId);
-      initProductBar(barContainerId);
       console.log('ChartManager successfully initialized.');
     },
     update: (filteredEvents) => {

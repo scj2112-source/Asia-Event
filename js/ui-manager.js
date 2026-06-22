@@ -89,12 +89,7 @@ const UIManager = (() => {
       triggerFilterChange();
     });
 
-    // 5. Search Bar Input
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', function() {
-      activeFilters.searchQuery = this.value.toLowerCase();
-      triggerFilterChange();
-    });
+    // 5. Search Bar Input removed from template
 
     // Close modal on background click
     window.addEventListener('click', (e) => {
