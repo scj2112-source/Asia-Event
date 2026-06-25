@@ -201,8 +201,46 @@
       </div>
 
       <!-- Detail Body (Grouped Event Cards) -->
-      <div class="detail-body" id="detailCardsContainer">
-        <!-- Rendered by JS -->
+      <div class="detail-body">
+        
+        <!-- 주요 항만 통관 및 디머리지 리스크 카드 -->
+        <div class="card port-clearance-status" id="portClearanceCard" style="display: none;">
+          <div class="card-header">
+            <span><i>⚓</i> 주요 항만 통관 및 디머리지 리스크</span>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <label for="portSelect" class="form-label">대상 항만 선택</label>
+              <select id="portSelect" class="form-control">
+                <option value="">-- 항구를 선택하세요 --</option>
+              </select>
+            </div>
+            <div class="congestion-gauge-container">
+              <div class="gauge-label">실시간 통관 적체 수준</div>
+              <div id="congestionBadge" class="badge badge-neutral">대기 중...</div>
+              <div class="progress-bar-bg">
+                <div id="congestionProgress" class="progress-bar-fill" style="width: 0%"></div>
+              </div>
+              <div class="metrics-row">
+                <span>평균 체류: <strong id="avgDwellTime">- 일</strong></span>
+                <span>주변 대기선박: <strong id="waitingVessels">- 척</strong></span>
+              </div>
+            </div>
+            <div class="demurrage-alert-box" id="demurrageAlertBox">
+              <div class="alert-title">⚠️ 디머리지(체선료) 발생 위험도</div>
+              <div class="demurrage-countdown">
+                Free Time 잔여 예측: <span id="freeTimeDays" class="highlight">- 일</span>
+              </div>
+              <div class="expected-cost">
+                지연 시 예상 페널티: <span id="estimatedCost">- / 일</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="detailCardsContainer">
+          <!-- Rendered by JS -->
+        </div>
       </div>
 
     </aside>

@@ -919,3 +919,183 @@ body {
     width: 95%;
   }
 }
+
+/* ==========================================================================
+   Port Clearance & Demurrage Section Card Styling
+   ========================================================================== */
+.port-clearance-status {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.port-clearance-status .card-header {
+  padding: 14px 16px;
+  background-color: var(--bg-main);
+  border-bottom: 1px solid var(--border-color);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.port-clearance-status .card-body {
+  padding: 16px;
+}
+
+.port-clearance-status .form-control {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--bg-main);
+  color: var(--text-dark);
+  font-family: var(--font-primary);
+  outline: none;
+  transition: border-color var(--transition-speed);
+}
+
+.port-clearance-status .form-control:focus {
+  border-color: var(--primary);
+}
+
+.congestion-gauge-container {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.gauge-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-medium);
+  margin-bottom: 8px;
+}
+
+.progress-bar-bg {
+  height: 8px;
+  background-color: var(--border-light);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 4px;
+  transition: width var(--transition-speed) ease, background-color var(--transition-speed) ease;
+}
+
+.metrics-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-medium);
+}
+
+.metrics-row strong {
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+/* Demurrage Alert Box Styling */
+.demurrage-alert-box {
+  padding: 12px 14px;
+  border-radius: 6px;
+  background-color: var(--bg-main);
+  border-left: 4px solid var(--border-color);
+  transition: all var(--transition-speed);
+}
+
+.demurrage-alert-box.alert-critical {
+  background-color: var(--color-critical-bg);
+  border-left-color: var(--color-critical);
+}
+
+.demurrage-alert-box.alert-high {
+  background-color: var(--color-high-bg);
+  border-left-color: var(--color-high);
+}
+
+.demurrage-alert-box.alert-medium {
+  background-color: var(--color-medium-bg);
+  border-left-color: var(--color-medium);
+}
+
+.demurrage-alert-box.alert-opportunity {
+  background-color: var(--color-opportunity-bg);
+  border-left-color: var(--color-opportunity);
+}
+
+.alert-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.demurrage-countdown {
+  font-size: 12px;
+  color: var(--text-medium);
+  margin-bottom: 4px;
+}
+
+.demurrage-countdown .highlight {
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.expected-cost {
+  font-size: 12px;
+  color: var(--text-medium);
+}
+
+.expected-cost .highlight {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* Badge styles */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.badge-neutral {
+  background-color: var(--bg-hover);
+  color: var(--text-medium);
+}
+
+.badge-critical {
+  background-color: var(--color-critical-bg);
+  color: var(--color-critical);
+}
+
+.badge-high {
+  background-color: var(--color-high-bg);
+  color: var(--color-high);
+}
+
+.badge-medium {
+  background-color: var(--color-medium-bg);
+  color: var(--color-medium);
+}
+
+.badge-opportunity {
+  background-color: var(--color-opportunity-bg);
+  color: var(--color-opportunity);
+}
+

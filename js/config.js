@@ -263,6 +263,24 @@ const CONFIG = {
     }
   },
 
+  // 국가별 주요 항구 매핑 데이터베이스
+  portMapping: {
+    "싱가포르": ["싱가포르항 (PSA)", "케펠 터미널 (Keppel)", "파시르 판장 (Pasir Panjang)"],
+    "방글라데시": ["치타공항 (Chittagong)", "몽글라항 (Mongla)"],
+    "네팔": ["비르간지 건조항 (Birgunj)", "바이라하와 건조항 (Bhairahawa)"],
+    "스리랑카": ["콜롬보항 (Colombo)", "함반토타항 (Hambantota)", "트린코말리항 (Trincomalee)"],
+    "태국": ["람차방항 (Laem Chabang)", "방콕항 (Klong Toey)", "송클라항 (Songkhla)"],
+    "인도네시아": ["탄중프리옥항 (자카르타)", "탄중페락항 (수라바야)", "벨라완항 (메단)"],
+    "베트남": ["호치민 Cat Lai", "하이퐁 (Hai Phong)", "다낭 (Da Nang)"],
+    "말레이시아": ["클랑항 (Port Klang)", "페낭항 (Penang)", "조호르항 (Johor Port)"],
+    "필리핀": ["마닐라 국제 컨테이너 터미널", "수빅항 (Subic Bay)", "세부항 (Cebu Port)"],
+    "인도": ["나바셰바항 (JNPT) / 뭄바이", "첸나이항 (Chennai)", "문드라항 (Mundra)"],
+    "대만": ["가오슝항", "키륭항 (Keelung)", "타이중항 (Taichung)"],
+    "중국": ["상하이항 (Shanghai)", "닝보-저우산항 (Ningbo)", "심천항 (Shenzhen)", "청도항 (Qingdao)"],
+    "호주": ["멜버른항 (Melbourne)", "시드니항 (Sydney)", "브리즈번항 (Brisbane)"],
+    "뉴질랜드": ["오클랜드항 (Auckland)", "타우랑가항 (Tauranga)", "리틀턴항 (Lyttelton)"]
+  },
+
   // High-fidelity fallback/default dataset (Korean Localized - 최소 3개 이벤트 보장)
   defaultEvents: [
     // 1. 싱가포르 (3개)

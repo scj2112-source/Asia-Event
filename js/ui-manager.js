@@ -101,6 +101,16 @@ const UIManager = (() => {
       MapManager.resetZoom();
       closeDetailPanel();
     });
+
+    // 7. Port Select Dropdown Change Event
+    const portSelect = document.getElementById('portSelect');
+    if (portSelect) {
+      portSelect.addEventListener('change', function () {
+        if (selectedCountryName) {
+          updatePortClearanceStatus(selectedCountryName, this.value);
+        }
+      });
+    }
   }
 
   function triggerFilterChange() {
@@ -199,6 +209,29 @@ const UIManager = (() => {
     // 4. Render Event Cards
     renderEventCards(countryName);
 
+    // [NEW] Populate and update Port Clearance status card
+    const portSelect = document.getElementById('portSelect');
+    const portClearanceCard = document.getElementById('portClearanceCard');
+    if (portSelect && portClearanceCard) {
+      portClearanceCard.style.display = 'block';
+      portSelect.innerHTML = '<option value="">-- 항구를 선택하세요 --</option>';
+
+      const ports = CONFIG.portMapping[countryName] || [];
+      ports.forEach(port => {
+        const option = document.createElement('option');
+        option.value = port;
+        option.textContent = port;
+        portSelect.appendChild(option);
+      });
+
+      if (ports.length > 0) {
+        portSelect.value = ports[0];
+        updatePortClearanceStatus(countryName, ports[0]);
+      } else {
+        resetPortClearanceUI();
+      }
+    }
+
     panel.classList.add('open');
     setTimeout(() => MapManager.invalidateSize(), 300);
   }
@@ -208,6 +241,11 @@ const UIManager = (() => {
     panel.classList.remove('open');
     selectedCountryName = null;
     activeFilters.country = 'All';
+
+    // [NEW] Hide and reset port clearance card on close
+    const portClearanceCard = document.getElementById('portClearanceCard');
+    if (portClearanceCard) portClearanceCard.style.display = 'none';
+    resetPortClearanceUI();
     
     document.querySelectorAll('.country-item').forEach(item => item.classList.remove('selected'));
     
@@ -357,6 +395,141 @@ const UIManager = (() => {
     if (spinner) {
       spinner.style.display = show ? 'flex' : 'none';
     }
+  }
+
+  // Update port clearance card based on country and port
+  async function updatePortClearanceStatus(countryName, portName) {
+    if (!portName) {
+      resetPortClearanceUI();
+      return;
+    }
+
+    const badgeEl = document.getElementById('congestionBadge');
+    const progressEl = document.getElementById('congestionProgress');
+    const avgDwellEl = document.getElementById('avgDwellTime');
+    const vesselsEl = document.getElementById('waitingVessels');
+    const alertBoxEl = document.getElementById('demurrageAlertBox');
+    const countdownEl = document.getElementById('freeTimeDays');
+    const costEl = document.getElementById('estimatedCost');
+
+    if (!badgeEl || !progressEl || !avgDwellEl || !vesselsEl || !alertBoxEl || !countdownEl || !costEl) return;
+
+    // Set temporary loading state
+    badgeEl.className = 'badge badge-neutral';
+    badgeEl.textContent = '조회 중...';
+    progressEl.style.width = '0%';
+
+    try {
+      // Call parallel API helper in DataManager
+      const data = await DataManager.fetchPortLogisticsData(countryName, portName);
+      
+      const dwell = data.dwellDays;
+      const waiting = data.waitingVessels;
+
+      // Free Time is 5 days
+      const freeTimeLimit = 5;
+      
+      // Determine Congestion Level, Badge, and Progress Bar Width/Color
+      let levelClass = 'opportunity';
+      let levelText = '🟢 원활 (정체 없음)';
+      let barColor = 'var(--color-opportunity)';
+      
+      if (dwell >= 6.0) {
+        levelClass = 'critical';
+        levelText = '🔴 심각 적체';
+        barColor = 'var(--color-critical)';
+      } else if (dwell >= 4.5) {
+        levelClass = 'high';
+        levelText = '🟠 지연 우려';
+        barColor = 'var(--color-high)';
+      } else if (dwell >= 3.0) {
+        levelClass = 'medium';
+        levelText = '🟡 보통';
+        barColor = 'var(--color-medium)';
+      }
+
+      // Update badge
+      badgeEl.className = `badge badge-${levelClass}`;
+      badgeEl.textContent = levelText;
+
+      // Update progress bar
+      // Dwell time out of 8 days maps to 0-100%
+      const percentage = Math.min(100, Math.round((dwell / 8) * 100));
+      progressEl.style.width = `${percentage}%`;
+      progressEl.style.backgroundColor = barColor;
+
+      // Update avg dwell and vessels
+      avgDwellEl.textContent = `${dwell} 일`;
+      vesselsEl.textContent = `${waiting} 척`;
+
+      // Update Demurrage Risk D-Day and Alert Box
+      alertBoxEl.className = `demurrage-alert-box alert-${levelClass}`;
+      
+      const daysDiff = freeTimeLimit - dwell;
+      if (daysDiff > 0) {
+        countdownEl.className = 'highlight';
+        countdownEl.style.color = 'var(--color-opportunity)';
+        countdownEl.textContent = `D-${daysDiff.toFixed(1)} (${daysDiff.toFixed(1)}일 남음)`;
+      } else if (daysDiff === 0) {
+        countdownEl.className = 'highlight';
+        countdownEl.style.color = 'var(--color-medium)';
+        countdownEl.textContent = `D-Day (오늘까지 Free Time)`;
+      } else {
+        countdownEl.className = 'highlight';
+        countdownEl.style.color = 'var(--color-critical)';
+        countdownEl.textContent = `초과 ${Math.abs(daysDiff).toFixed(1)}일 (경과)`;
+      }
+
+      // Calculate estimated cost
+      const metrics = DataManager.getCountryMetrics(countryName);
+      const rate = metrics.exchange ? metrics.exchange.rate : 1.0;
+      const currencyCode = CONFIG.countries[countryName].currencyCode;
+      
+      const baseUsdCost = 150;
+      const dailyLocalCost = Math.round(baseUsdCost * rate);
+
+      let costText = "";
+      if (daysDiff < 0) {
+        // Already overdue
+        const overdueDays = Math.abs(daysDiff);
+        const accumulatedUsd = Math.round(overdueDays * baseUsdCost);
+        const accumulatedLocal = Math.round(overdueDays * baseUsdCost * rate);
+        costText = `$${baseUsdCost} / 일 (현재 누적 $${accumulatedUsd} / 약 ${accumulatedLocal.toLocaleString()} ${currencyCode})`;
+      } else {
+        costText = `$${baseUsdCost} / 일 (약 ${dailyLocalCost.toLocaleString()} ${currencyCode} / 일)`;
+      }
+      costEl.textContent = costText;
+
+    } catch (e) {
+      console.error("Error updating port clearance UI:", e);
+      resetPortClearanceUI();
+    }
+  }
+
+  function resetPortClearanceUI() {
+    const badgeEl = document.getElementById('congestionBadge');
+    const progressEl = document.getElementById('congestionProgress');
+    const avgDwellEl = document.getElementById('avgDwellTime');
+    const vesselsEl = document.getElementById('waitingVessels');
+    const alertBoxEl = document.getElementById('demurrageAlertBox');
+    const countdownEl = document.getElementById('freeTimeDays');
+    const costEl = document.getElementById('estimatedCost');
+
+    if (badgeEl) {
+      badgeEl.className = 'badge badge-neutral';
+      badgeEl.textContent = '대기 중...';
+    }
+    if (progressEl) progressEl.style.width = '0%';
+    if (avgDwellEl) avgDwellEl.textContent = '- 일';
+    if (vesselsEl) vesselsEl.textContent = '- 척';
+    if (alertBoxEl) {
+      alertBoxEl.className = 'demurrage-alert-box';
+    }
+    if (countdownEl) {
+      countdownEl.style.color = '';
+      countdownEl.textContent = '- 일';
+    }
+    if (costEl) costEl.textContent = '- / 일';
   }
 
   return {
